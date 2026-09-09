@@ -1,8 +1,21 @@
 <?php
-// functions/transaksi_functions.php
+/**
+ * Modul Manajemen Transaksi Parkir (Check-In, Check-Out, Billing, & Struk)
+ * 
+ * Mengelola alur transaksi masuk/keluar kendaraan secara atomik menggunakan
+ * Database Transactions (BEGIN TRANSACTION / COMMIT / ROLLBACK) untuk menjamin
+ * konsistensi data slot terisi area parkir dan kalkulasi tarif parkir.
+ * 
+ * @package Parkeer\Functions
+ * @author Alwan Lutfi Maulida
+ */
 
 /**
- * Ambil semua kendaraan yang sedang berada di dalam area (status masih 'masuk')
+ * Mengambil daftar seluruh kendaraan yang sedang aktif parkir di dalam lokasi (status 'masuk').
+ * 
+ * @param PDO $koneksi Instance koneksi database PDO
+ * @param string $keyword Keyword pencarian plat nomor (opsional)
+ * @return array Array daftar transaksi kendaraan aktif
  */
 function getKendaraanSedangParkir(PDO $koneksi, string $keyword = ''): array
 {
@@ -18,7 +31,11 @@ function getKendaraanSedangParkir(PDO $koneksi, string $keyword = ''): array
 }
 
 /**
- * Cari kendaraan berdasarkan plat nomor persis (dipakai saat catat masuk)
+ * Mencari profil data kendaraan berdasarkan plat nomor persis.
+ * 
+ * @param PDO $koneksi Instance koneksi database PDO
+ * @param string $plat String plat nomor kendaraan (misal: "B 1234 ABC")
+ * @return array|false Record kendaraan atau false jika tidak ditemukan
  */
 function cariKendaraanByPlat(PDO $koneksi, string $plat): array|false
 {
@@ -28,7 +45,11 @@ function cariKendaraanByPlat(PDO $koneksi, string $plat): array|false
 }
 
 /**
- * Cek apakah kendaraan tsb sedang punya transaksi aktif (status='masuk')
+ * Memverifikasi apakah kendaraan tertentu sedang berada di dalam lokasi parkir.
+ * 
+ * @param PDO $koneksi Instance koneksi database PDO
+ * @param int $idKendaraan ID unik kendaraan
+ * @return bool True jika kendaraan sedang di dalam, false jika tidak
  */
 function kendaraanMasihDidalam(PDO $koneksi, int $idKendaraan): bool
 {
@@ -38,7 +59,11 @@ function kendaraanMasihDidalam(PDO $koneksi, int $idKendaraan): bool
 }
 
 /**
- * Ambil tarif berdasarkan jenis kendaraan
+ * Mengambil data konfigurasi tarif parkir per jam berdasarkan jenis kendaraan.
+ * 
+ * @param PDO $koneksi Instance koneksi database PDO
+ * @param string $jenis Jenis kendaraan ("motor", "mobil", "truk", dll)
+ * @return array|false Record tarif parkir atau false
  */
 function getTarifByJenis(PDO $koneksi, string $jenis): array|false
 {
@@ -48,12 +73,21 @@ function getTarifByJenis(PDO $koneksi, string $jenis): array|false
 }
 
 /**
- * Proses kendaraan masuk: validasi slot, simpan transaksi, tambah slot terisi
- * Dibungkus dalam TRANSACTION supaya insert transaksi & update slot area konsisten (atomic)
+ * Memproses pendaftaran kendaraan masuk (Check-In Gate Barrier).
+ * 
+ * Mengecek ketersediaan slot area secara atomik, menyimpan transaksi status 'masuk',
+ * dan menambah hitungan slot `terisi` pada area parkir yang dipilih.
+ * 
+ * @param PDO $koneksi Instance koneksi database PDO
+ * @param int $idKendaraan ID kendaraan yang masuk
+ * @param int $idArea ID area parkir tujuan
+ * @param int $idTarif ID tarif berlaku
+ * @param int $idUser ID petugas operator gate
+ * @return array Result status ['sukses' => bool, 'id_parkir' => int|null, 'pesan' => string|null]
  */
 function prosesKendaraanMasuk(PDO $koneksi, int $idKendaraan, int $idArea, int $idTarif, int $idUser): array
 {
-    // Cek area masih ada slot kosong
+    // 1. Verifikasi slot kosong pada area parkir tujuan
     $stmt = $koneksi->prepare("SELECT kapasitas, terisi FROM tb_area_parkir WHERE id_area = :id");
     $stmt->execute([':id' => $idArea]);
     $area = $stmt->fetch();
@@ -93,10 +127,19 @@ function prosesKendaraanMasuk(PDO $koneksi, int $idKendaraan, int $idArea, int $
 }
 
 /**
- * Proses kendaraan keluar: hitung durasi & biaya, update transaksi, kurangi slot terisi
+ * Memproses penyelesaian transaksi kendaraan keluar (Check-Out Kasir).
+ * 
+ * Mengkalkulasi durasi parkir (pembulatan ke atas per jam, minimal 1 jam),
+ * mengalikan dengan tarif per jam berlaku, memperbarui status transaksi menjadi 'keluar',
+ * dan mengosongkan 1 slot terisi pada area parkir terkait secara atomik.
+ * 
+ * @param PDO $koneksi Instance koneksi database PDO
+ * @param int $idParkir ID unik transaksi parkir
+ * @return array Result status ['sukses' => bool, 'durasi_jam' => int|null, 'biaya_total' => float|null, 'pesan' => string|null]
  */
 function prosesKendaraanKeluar(PDO $koneksi, int $idParkir): array
 {
+    // 1. Ambil detail transaksi aktif beserta tarif per jam
     $stmt = $koneksi->prepare(
         "SELECT t.*, tf.tarif_per_jam FROM tb_transaksi t
          JOIN tb_tarif tf ON t.id_tarif = tf.id_tarif
@@ -109,11 +152,12 @@ function prosesKendaraanKeluar(PDO $koneksi, int $idParkir): array
         return ['sukses' => false, 'pesan' => 'Transaksi tidak ditemukan atau sudah selesai.'];
     }
 
+    // 2. Kalkulasi selisih waktu masuk dan keluar (durasi per jam)
     $waktuMasuk = new DateTime($transaksi['waktu_masuk']);
     $waktuKeluar = new DateTime();
     $selisihDetik = $waktuKeluar->getTimestamp() - $waktuMasuk->getTimestamp();
 
-    // Pembulatan ke atas per jam, minimal 1 jam
+    // Pembulatan ke atas per jam (misal 1 jam 5 menit dihitung 2 jam), minimal 1 jam
     $durasiJam = (int) ceil($selisihDetik / 3600);
     if ($durasiJam < 1) $durasiJam = 1;
 
@@ -122,6 +166,7 @@ function prosesKendaraanKeluar(PDO $koneksi, int $idParkir): array
     try {
         $koneksi->beginTransaction();
 
+        // 3. Update data transaksi keluar
         $stmt = $koneksi->prepare(
             "UPDATE tb_transaksi SET waktu_keluar = NOW(), durasi_jam = :durasi, biaya_total = :biaya, status = 'keluar'
              WHERE id_parkir = :id"
@@ -132,6 +177,7 @@ function prosesKendaraanKeluar(PDO $koneksi, int $idParkir): array
             ':id' => $idParkir,
         ]);
 
+        // 4. Kurangi slot terisi di area parkir
         $stmt = $koneksi->prepare("UPDATE tb_area_parkir SET terisi = terisi - 1 WHERE id_area = :id");
         $stmt->execute([':id' => $transaksi['id_area']]);
 
@@ -144,7 +190,11 @@ function prosesKendaraanKeluar(PDO $koneksi, int $idParkir): array
 }
 
 /**
- * Ambil detail 1 transaksi lengkap (dipakai untuk struk)
+ * Mengambil detail lengkap 1 record transaksi parkir (dipakai untuk cetak struk kasir).
+ * 
+ * @param PDO $koneksi Instance koneksi database PDO
+ * @param int $idParkir ID unik transaksi parkir
+ * @return array|false Data transaksi lengkap beserta plat, area, dan nama petugas
  */
 function getDetailTransaksi(PDO $koneksi, int $idParkir): array|false
 {
@@ -161,7 +211,13 @@ function getDetailTransaksi(PDO $koneksi, int $idParkir): array|false
 }
 
 /**
- * Riwayat transaksi selesai, dengan filter rentang waktu (dipakai juga di Tahap 8 Owner)
+ * Mengambil riwayat transaksi parkir yang telah selesai (status 'keluar') dengan filter tanggal.
+ * 
+ * @param PDO $koneksi Instance koneksi database PDO
+ * @param string|null $dariTanggal Filter awal tanggal (format YYYY-MM-DD)
+ * @param string|null $sampaiTanggal Filter akhir tanggal (format YYYY-MM-DD)
+ * @param int $limit Batas maksimal record yang diambil (default 50)
+ * @return array Array daftar riwayat transaksi
  */
 function getRiwayatTransaksi(PDO $koneksi, ?string $dariTanggal = null, ?string $sampaiTanggal = null, int $limit = 50): array
 {
@@ -188,4 +244,4 @@ function getRiwayatTransaksi(PDO $koneksi, ?string $dariTanggal = null, ?string 
     $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
     $stmt->execute();
     return $stmt->fetchAll();
-}
+}

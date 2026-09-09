@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 08, 2026 at 08:33 AM
+-- Generation Time: Sep 09, 2026 at 01:46 AM
 -- Server version: 8.4.3
--- PHP Version: 8.3.28
+-- PHP Version: 8.5.9
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `db-parkir`
+-- Database: `db_parkeer`
 --
 
 -- --------------------------------------------------------
@@ -33,6 +33,14 @@ CREATE TABLE `tb_area_parkir` (
   `kapasitas` int NOT NULL,
   `terisi` int NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `tb_area_parkir`
+--
+
+INSERT INTO `tb_area_parkir` (`id_area`, `nama_area`, `kapasitas`, `terisi`) VALUES
+(1, 'Skansanesia', 112, 0),
+(2, 'Masjid Ash Shidiq', 250, 1);
 
 -- --------------------------------------------------------
 
@@ -49,6 +57,16 @@ CREATE TABLE `tb_kendaraan` (
   `id_user` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `tb_kendaraan`
+--
+
+INSERT INTO `tb_kendaraan` (`id_kendaraan`, `plat_nomor`, `jenis_kendaraan`, `warna`, `pemilik`, `id_user`) VALUES
+(1, 'B 1782 AA', 'motor', 'aa', 'mm', 2),
+(2, 'B 1121 MA', 'motor', 'Biru', 'Qodir', 2),
+(3, 'B 1111 MK', 'motor', 'Biru', 'Indra', 5),
+(4, 'R 1211 MJ', 'mobil', 'Jingga', 'egie', 5);
+
 -- --------------------------------------------------------
 
 --
@@ -62,6 +80,65 @@ CREATE TABLE `tb_log_aktivitas` (
   `waktu_aktivitas` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `tb_log_aktivitas`
+--
+
+INSERT INTO `tb_log_aktivitas` (`id_log`, `id_user`, `aktivitas`, `waktu_aktivitas`) VALUES
+(1, 1, 'Login ke sistem', '2026-09-09 06:22:59'),
+(2, 1, 'Menambahkan user baru: lutzpi', '2026-09-09 06:25:39'),
+(3, 1, 'Menambahkan tarif: motor', '2026-09-09 06:25:52'),
+(4, 1, 'Menambahkan area: Skansanesia', '2026-09-09 06:26:05'),
+(5, 1, 'Logout dari sistem', '2026-09-09 06:26:13'),
+(6, 2, 'Login ke sistem', '2026-09-09 06:32:21'),
+(7, 2, 'Mencatat kendaraan masuk (id_parkir: 1)', '2026-09-09 06:35:00'),
+(8, 2, 'Memproses kendaraan keluar (id_parkir: 1)', '2026-09-09 06:38:35'),
+(9, 2, 'Logout dari sistem', '2026-09-09 06:39:06'),
+(10, 1, 'Login ke sistem', '2026-09-09 06:57:54'),
+(11, 1, 'Menambahkan tarif: mobil', '2026-09-09 06:58:05'),
+(12, 1, 'Menambahkan tarif: lainnya', '2026-09-09 06:58:13'),
+(13, 1, 'Logout dari sistem', '2026-09-09 07:04:55'),
+(14, 1, 'Login ke sistem', '2026-09-09 07:25:12'),
+(15, 1, 'Logout dari sistem', '2026-09-09 07:27:32'),
+(16, 1, 'Login ke sistem', '2026-09-09 07:29:07'),
+(17, 1, 'Logout dari sistem', '2026-09-09 07:29:17'),
+(18, 2, 'Login ke sistem', '2026-09-09 07:29:29'),
+(19, 2, 'Logout dari sistem', '2026-09-09 07:29:36'),
+(20, 1, 'Login ke sistem', '2026-09-09 07:30:12'),
+(21, 1, 'Logout dari sistem', '2026-09-09 07:55:53'),
+(22, 3, 'Login ke sistem', '2026-09-09 07:59:13'),
+(23, 3, 'Logout dari sistem', '2026-09-09 07:59:30'),
+(24, 2, 'Login ke sistem', '2026-09-09 07:59:42'),
+(25, 2, 'Mencatat kendaraan masuk (id_parkir: 2)', '2026-09-09 08:00:34'),
+(26, 2, 'Logout dari sistem', '2026-09-09 08:01:36'),
+(27, 1, 'Login ke sistem', '2026-09-09 08:01:46'),
+(28, 1, 'Logout dari sistem', '2026-09-09 08:02:59'),
+(29, 1, 'Login ke sistem', '2026-09-09 08:04:07'),
+(30, 1, 'Logout dari sistem', '2026-09-09 08:04:14'),
+(31, 1, 'Login ke sistem', '2026-09-09 08:06:08'),
+(32, 1, 'Menambahkan user baru: lutpi', '2026-09-09 08:06:32'),
+(33, 1, 'Menambahkan user baru: qodir', '2026-09-09 08:08:21'),
+(34, 1, 'Menambahkan area: Masjid Ash Shidiq', '2026-09-09 08:19:10'),
+(35, 1, 'Logout dari sistem', '2026-09-09 08:19:22'),
+(36, 5, 'Login ke sistem', '2026-09-09 08:19:26'),
+(37, 5, 'Mencatat kendaraan masuk: B 1111 MK (id_parkir: 3)', '2026-09-09 08:21:29'),
+(38, 5, 'Memproses kendaraan keluar (id_parkir: 3)', '2026-09-09 08:22:09'),
+(39, 5, 'Memproses kendaraan keluar (id_parkir: 2)', '2026-09-09 08:23:37'),
+(40, 5, 'Logout dari sistem', '2026-09-09 08:23:49'),
+(41, 3, 'Login ke sistem', '2026-09-09 08:23:53'),
+(42, 3, 'Logout dari sistem', '2026-09-09 08:27:30'),
+(43, 5, 'Login ke sistem', '2026-09-09 08:28:38'),
+(44, 5, 'Logout dari sistem', '2026-09-09 08:28:46'),
+(45, 5, 'Login ke sistem', '2026-09-09 08:29:21'),
+(46, 5, 'Logout dari sistem', '2026-09-09 08:31:10'),
+(47, 1, 'Login ke sistem', '2026-09-09 08:31:17'),
+(48, 1, 'Logout dari sistem', '2026-09-09 08:31:34'),
+(49, 5, 'Login ke sistem', '2026-09-09 08:31:42'),
+(50, 5, 'Mencatat kendaraan masuk: R 1211 MJ (id_parkir: 4)', '2026-09-09 08:32:09'),
+(51, 5, 'Logout dari sistem', '2026-09-09 08:32:23'),
+(52, 1, 'Login ke sistem', '2026-09-09 08:32:41'),
+(53, 1, 'Logout dari sistem', '2026-09-09 08:33:01');
+
 -- --------------------------------------------------------
 
 --
@@ -73,6 +150,15 @@ CREATE TABLE `tb_tarif` (
   `jenis_kendaraan` enum('motor','mobil','lainnya','') NOT NULL,
   `tarif_per_jam` decimal(10,0) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `tb_tarif`
+--
+
+INSERT INTO `tb_tarif` (`id_tarif`, `jenis_kendaraan`, `tarif_per_jam`) VALUES
+(1, 'motor', 2000),
+(2, 'mobil', 3000),
+(3, 'lainnya', 5000);
 
 -- --------------------------------------------------------
 
@@ -93,6 +179,16 @@ CREATE TABLE `tb_transaksi` (
   `id_area` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `tb_transaksi`
+--
+
+INSERT INTO `tb_transaksi` (`id_parkir`, `id_kendaraan`, `waktu_masuk`, `waktu_keluar`, `id_tarif`, `durasi_jam`, `biaya_total`, `status`, `id_user`, `id_area`) VALUES
+(1, 1, '2026-09-09 06:35:00', '2026-09-09 06:38:35', 1, 1, 2000, 'keluar', 2, 1),
+(2, 2, '2026-09-09 08:00:34', '2026-09-09 08:23:37', 1, 1, 2000, 'keluar', 2, 1),
+(3, 3, '2026-09-09 08:21:29', '2026-09-09 08:22:09', 1, 1, 2000, 'keluar', 5, 2),
+(4, 4, '2026-09-09 08:32:09', NULL, 2, NULL, NULL, 'masuk', 5, 2);
+
 -- --------------------------------------------------------
 
 --
@@ -107,6 +203,18 @@ CREATE TABLE `tb_user` (
   `role` enum('admin','petugas','owner','') NOT NULL,
   `status_aktif` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `tb_user`
+--
+
+INSERT INTO `tb_user` (`id_user`, `nama_lengkap`, `username`, `password`, `role`, `status_aktif`) VALUES
+(1, 'Admin', 'admin', '$2y$12$H8zAZa6fhrw8BIShlug6DuucpESJEMJFDd5zX6KGE3fSQTLHMjsaK', 'admin', 1),
+(2, 'Petugas', 'petugas', '$2y$12$H8zAZa6fhrw8BIShlug6DuucpESJEMJFDd5zX6KGE3fSQTLHMjsaK', 'petugas', 1),
+(3, 'Owner', 'owner', '$2y$12$H8zAZa6fhrw8BIShlug6DuucpESJEMJFDd5zX6KGE3fSQTLHMjsaK', 'owner', 1),
+(4, 'lutz', 'lutzpi', '$2y$12$HG1K2s75DmUTM0XvMEZ3ru.n2.iMDKUktKORy3h2aRKLjheCnIK0G', 'petugas', 1),
+(5, 'lutz', 'lutpi', '$2y$12$Y1pqtGLI3.0EaLvFRA/inOA1Zpon8L3EsYw6wFr477BhRwXFeI6MC', 'petugas', 1),
+(6, 'alqodri', 'qodir', '$2y$12$25WJFpDSQBkEuVBEkAZj.u3QjqqBma34EYR9vZaSpqA2vOutgjS.O', 'petugas', 1);
 
 --
 -- Indexes for dumped tables
@@ -167,37 +275,37 @@ ALTER TABLE `tb_user`
 -- AUTO_INCREMENT for table `tb_area_parkir`
 --
 ALTER TABLE `tb_area_parkir`
-  MODIFY `id_area` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id_area` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `tb_kendaraan`
 --
 ALTER TABLE `tb_kendaraan`
-  MODIFY `id_kendaraan` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id_kendaraan` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `tb_log_aktivitas`
 --
 ALTER TABLE `tb_log_aktivitas`
-  MODIFY `id_log` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id_log` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT for table `tb_tarif`
 --
 ALTER TABLE `tb_tarif`
-  MODIFY `id_tarif` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id_tarif` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `tb_transaksi`
 --
 ALTER TABLE `tb_transaksi`
-  MODIFY `id_parkir` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id_parkir` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `tb_user`
 --
 ALTER TABLE `tb_user`
-  MODIFY `id_user` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id_user` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables

@@ -1,9 +1,22 @@
 <?php
-// functions/rekap_functions.php
+/**
+ * Modul Analisis & Pelaporan Financial Rekap Transaksi (Role Executive Owner)
+ * 
+ * Menyediakan fungsi-fungsi agregasi data finansial (SUM, COUNT, AVG, GROUP BY)
+ * langsung pada level database MySQL demi efisiensi memori & kecepatan loading.
+ * 
+ * @package Parkeer\Functions
+ * @author Alwan Lutfi Maulida
+ */
 
 /**
- * Ringkasan total transaksi & pendapatan dalam rentang waktu.
- * Dihitung langsung oleh MySQL (SUM, COUNT) - tidak ambil data mentah lalu hitung di PHP.
+ * Mengalkulasi ringkasan KPI (Key Performance Indicator) total transaksi,
+ * total omzet pendapatan, rata-rata omzet per transaksi, dan rata-rata durasi.
+ * 
+ * @param PDO $koneksi Instance koneksi database PDO
+ * @param string $dari Tanggal awal rentang (format YYYY-MM-DD)
+ * @param string $sampai Tanggal akhir rentang (format YYYY-MM-DD)
+ * @return array Array ringkasan finansial [total_transaksi, total_pendapatan, rata_rata, rata_rata_durasi]
  */
 function getRingkasanRekap(PDO $koneksi, string $dari, string $sampai): array
 {
@@ -21,7 +34,12 @@ function getRingkasanRekap(PDO $koneksi, string $dari, string $sampai): array
 }
 
 /**
- * Breakdown pendapatan & jumlah transaksi per jenis kendaraan
+ * Mengambil persentase breakdown pendapatan & volume transaksi berdasarkan jenis kendaraan.
+ * 
+ * @param PDO $koneksi Instance koneksi database PDO
+ * @param string $dari Tanggal awal rentang
+ * @param string $sampai Tanggal akhir rentang
+ * @return array Array rekap per jenis kendaraan
  */
 function getRekapPerJenis(PDO $koneksi, string $dari, string $sampai): array
 {
@@ -39,7 +57,12 @@ function getRekapPerJenis(PDO $koneksi, string $dari, string $sampai): array
 }
 
 /**
- * Tren pendapatan per hari, untuk digambar sebagai grafik garis/batang
+ * Mengambil tren omzet harian yang disiapkan khusus untuk rendering grafik bar Chart.js.
+ * 
+ * @param PDO $koneksi Instance koneksi database PDO
+ * @param string $dari Tanggal awal rentang
+ * @param string $sampai Tanggal akhir rentang
+ * @return array Array deret tanggal dan total pendapatan harian
  */
 function getRekapPerHari(PDO $koneksi, string $dari, string $sampai): array
 {
@@ -56,8 +79,14 @@ function getRekapPerHari(PDO $koneksi, string $dari, string $sampai): array
 }
 
 /**
- * Daftar detail transaksi dalam rentang waktu, dengan LIMIT agar tidak berat
- * jika data besar (sesuai poin PDF: "gunakan limit ketika menggunakan data besar")
+ * Mengambil rincian log transaksi terperinci dengan pembatasan LIMIT demi performa optimal.
+ * (Sesuai petunjuk Coding Guidelines: "Gunakan limit ketika menggunakan data besar").
+ * 
+ * @param PDO $koneksi Instance koneksi database PDO
+ * @param string $dari Tanggal awal rentang
+ * @param string $sampai Tanggal akhir rentang
+ * @param int $limit Batas maksimal baris data (default 100)
+ * @return array Array detail data transaksi
  */
 function getDetailTransaksiRekap(PDO $koneksi, string $dari, string $sampai, int $limit = 100): array
 {
@@ -75,4 +104,4 @@ function getDetailTransaksiRekap(PDO $koneksi, string $dari, string $sampai, int
     $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
     $stmt->execute();
     return $stmt->fetchAll();
-}
+}
