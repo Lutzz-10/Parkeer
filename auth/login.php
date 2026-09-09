@@ -56,6 +56,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Aplikasi Parkeer</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    brand: {
+                        50: '#FFF7EA',
+                        100: '#FEECC7',
+                        200: '#FDD68C',
+                        400: '#F8BA4E',
+                        500: '#F5A623',
+                        600: '#DB8E12',
+                        700: '#B0700D',
+                        800: '#7A4E09'
+                    }
+                }
+            }
+        }
+    }
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body { font-family: 'Segoe UI', system-ui, sans-serif; }
 
@@ -172,14 +193,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
 </head>
-<body class="min-h-screen flex">
+<body class="min-h-screen flex bg-slate-50">
 
-    <!-- Panel Kiri: Animasi Gerbang Parkir -->
+    <!-- Panel Kiri -->
     <div class="gate-panel hidden lg:flex w-3/5 relative items-center justify-center overflow-hidden">
 
-        <div class="gate-branding">
-            <p class="text-2xl font-bold tracking-tight">🅿️ Aplikasi Parkeer</p>
-            <p class="text-slate-400 text-sm mt-1">Kelola parkir jadi lebih mudah &amp; efisien</p>
+        <div class="absolute top-10 left-10 flex items-center gap-3">
+            <img src="/parkeer/assets/img/logo.png" alt="Logo Parkeer" class="h-12 w-12 object-contain">
+            <div>
+                <p class="text-3xl font-bold tracking-tight text-brand-500">PARKEER</p>
+                <p class="text-slate-400 text-xs -mt-1">Kelola parkir jadi lebih mudah</p>
+            </div>
         </div>
 
         <div class="gate-scene">
@@ -196,40 +220,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <p class="absolute bottom-8 left-1/2 -translate-x-1/2 text-slate-500 text-xs">
-            &copy; <?= date('Y') ?> Aplikasi Parkeer — CV Creative Gama
+            &copy; <?= date('Y') ?> Parkeer — CV Creative Gama
         </p>
     </div>
 
-    <!-- Panel Kanan: Form Login -->
-    <div class="w-full lg:w-2/5 flex items-center justify-center bg-white p-8">
-        <div class="w-full max-w-sm">
+    <!-- Panel Kanan: Form -->
+    <div class="w-full lg:w-2/5 flex items-center justify-center p-8">
+        <div class="w-full max-w-sm bg-white rounded-2xl shadow-xl shadow-slate-200/60 p-8 border border-slate-100">
 
-            <div class="mb-8 lg:hidden text-center">
-                <p class="text-2xl font-bold text-slate-800">🅿️ Aplikasi Parkeer</p>
+            <div class="flex flex-col items-center mb-8 lg:hidden">
+                <img src="/parkeer/assets/img/logo.png" alt="Logo Parkeer" class="h-14 w-14 object-contain mb-2">
+                <p class="text-2xl font-bold text-brand-500 tracking-tight">PARKEER</p>
             </div>
 
-            <h1 class="text-2xl font-bold text-slate-800 mb-1">Selamat Datang</h1>
-            <p class="text-slate-500 text-sm mb-6">Silakan login untuk melanjutkan</p>
+            <h1 class="text-2xl font-bold text-slate-800 mb-1">Selamat datang kembali</h1>
+            <p class="text-slate-500 text-sm mb-6">Masuk untuk mengelola sistem parkir</p>
 
             <?php if ($error): ?>
-                <div class="bg-red-100 text-red-700 text-sm rounded-lg px-4 py-2 mb-4">
-                    <?= htmlspecialchars($error) ?>
+                <div class="flex items-center gap-2 bg-red-50 text-red-600 text-sm rounded-lg px-4 py-3 mb-5 border border-red-100">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span><?= htmlspecialchars($error) ?></span>
                 </div>
             <?php endif; ?>
 
             <form method="POST" action="" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Username</label>
-                    <input type="text" name="username" required autofocus
-                           class="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Username</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" name="username" required autofocus
+                               class="w-full border border-slate-300 rounded-lg pl-10 pr-3 py-2.5 text-sm
+                                      focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-500 transition">
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
-                    <input type="password" name="password" required
-                           class="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="password" name="password" required
+                               class="w-full border border-slate-300 rounded-lg pl-10 pr-3 py-2.5 text-sm
+                                      focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-500 transition">
+                    </div>
                 </div>
                 <button type="submit"
-                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg py-2.5 transition mt-2">
+                        class="w-full bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-lg py-2.5 transition mt-2
+                               shadow-sm shadow-brand-500/30">
                     Masuk
                 </button>
             </form>

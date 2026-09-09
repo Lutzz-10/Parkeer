@@ -9,6 +9,27 @@ cekRole(['owner']);
     <title>Owner - Aplikasi Parkeer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    brand: {
+                        50: '#FFF7EA',
+                        100: '#FEECC7',
+                        200: '#FDD68C',
+                        400: '#F8BA4E',
+                        500: '#F5A623',
+                        600: '#DB8E12',
+                        700: '#B0700D',
+                        800: '#7A4E09'
+                    }
+                }
+            }
+        }
+    }
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body class="bg-slate-100 min-h-screen">
 <div class="flex min-h-screen">
