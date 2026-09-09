@@ -1,9 +1,9 @@
 <?php
-$judulHalaman = "Edit Kendaraan";
-require_once __DIR__ . '/../../includes/header_admin.php';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../functions/kendaraan_functions.php';
 require_once __DIR__ . '/../../functions/log_functions.php';
+require_once __DIR__ . '/../../includes/auth.php';
+cekRole(['admin']);
 
 $database = new Database();
 $koneksi = $database->connect();
@@ -33,42 +33,98 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $kendaraan = array_merge($kendaraan, $data);
 }
+
+$judulHalaman = "Edit Data Kendaraan";
+require_once __DIR__ . '/../../includes/header_admin.php';
 ?>
 
-<div class="bg-white rounded-xl shadow p-6 max-w-md">
-    <?php if ($error): ?>
-        <div class="bg-red-100 text-red-700 text-sm rounded-lg px-4 py-2 mb-4"><?= htmlspecialchars($error) ?></div>
-    <?php endif; ?>
+<div class="max-w-xl mx-auto">
+    
+    <div class="mb-6">
+        <a href="index.php" class="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white transition">
+            <i class="fa-solid fa-arrow-left"></i> Kembali ke daftar kendaraan
+        </a>
+    </div>
 
-    <form method="POST" class="space-y-4">
-        <div>
-            <label class="block text-sm font-medium mb-1">Plat Nomor</label>
-            <input type="text" name="plat_nomor" value="<?= htmlspecialchars($kendaraan['plat_nomor']) ?>" required
-                   class="w-full border border-slate-300 rounded-lg px-3 py-2">
+    <div class="bg-slate-950/80 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+        <div class="mb-6 pb-4 border-b border-slate-800 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/30 flex items-center justify-center text-brand-400 text-lg">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-bold text-white">Edit Data Kendaraan</h2>
+                <p class="text-xs text-slate-400">Perbarui plat nomor, jenis, warna, atau pemilik kendaraan</p>
+            </div>
         </div>
-        <div>
-            <label class="block text-sm font-medium mb-1">Jenis Kendaraan</label>
-            <select name="jenis_kendaraan" class="w-full border border-slate-300 rounded-lg px-3 py-2">
-                <?php foreach (['motor', 'mobil', 'lainnya'] as $j): ?>
-                    <option value="<?= $j ?>" <?= $kendaraan['jenis_kendaraan'] === $j ? 'selected' : '' ?>><?= ucfirst($j) ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div>
-            <label class="block text-sm font-medium mb-1">Warna</label>
-            <input type="text" name="warna" value="<?= htmlspecialchars($kendaraan['warna'] ?? '') ?>"
-                   class="w-full border border-slate-300 rounded-lg px-3 py-2">
-        </div>
-        <div>
-            <label class="block text-sm font-medium mb-1">Nama Pemilik</label>
-            <input type="text" name="pemilik" value="<?= htmlspecialchars($kendaraan['pemilik'] ?? '') ?>"
-                   class="w-full border border-slate-300 rounded-lg px-3 py-2">
-        </div>
-        <div class="flex gap-2 pt-2">
-            <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Simpan Perubahan</button>
-            <a href="index.php" class="bg-slate-200 hover:bg-slate-300 px-4 py-2 rounded-lg">Batal</a>
-        </div>
-    </form>
+
+        <?php if ($error): ?>
+            <div class="flex items-center gap-3 bg-red-950/80 text-red-300 text-sm rounded-2xl px-4 py-3 mb-6 border border-red-800/60 shadow-lg">
+                <i class="fa-solid fa-triangle-exclamation text-red-400"></i>
+                <span><?= htmlspecialchars($error) ?></span>
+            </div>
+        <?php endif; ?>
+
+        <form method="POST" class="space-y-5">
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Plat Nomor Kendaraan</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                        <i class="fa-solid fa-rectangle-list text-xs"></i>
+                    </div>
+                    <input type="text" name="plat_nomor" value="<?= htmlspecialchars($kendaraan['plat_nomor']) ?>" required
+                           class="w-full bg-slate-900 border border-slate-800 text-white rounded-xl pl-9 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition uppercase font-mono font-bold">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Jenis Kendaraan</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                        <i class="fa-solid fa-car-side text-xs"></i>
+                    </div>
+                    <select name="jenis_kendaraan" class="w-full bg-slate-900 border border-slate-800 text-white rounded-xl pl-9 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition appearance-none capitalize">
+                        <?php foreach (['motor', 'mobil', 'lainnya'] as $j): ?>
+                            <option value="<?= $j ?>" <?= $kendaraan['jenis_kendaraan'] === $j ? 'selected' : '' ?>><?= ucfirst($j) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-500">
+                        <i class="fa-solid fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Warna Kendaraan</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                        <i class="fa-solid fa-palette text-xs"></i>
+                    </div>
+                    <input type="text" name="warna" value="<?= htmlspecialchars($kendaraan['warna'] ?? '') ?>"
+                           class="w-full bg-slate-900 border border-slate-800 text-white rounded-xl pl-9 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Nama Pemilik</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                        <i class="fa-solid fa-user text-xs"></i>
+                    </div>
+                    <input type="text" name="pemilik" value="<?= htmlspecialchars($kendaraan['pemilik'] ?? '') ?>"
+                           class="w-full bg-slate-900 border border-slate-800 text-white rounded-xl pl-9 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition">
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 pt-4 border-t border-slate-800">
+                <button type="submit" class="bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-slate-950 font-bold px-6 py-3 rounded-xl text-sm transition shadow-lg shadow-brand-500/20">
+                    Simpan Perubahan
+                </button>
+                <a href="index.php" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-5 py-3 rounded-xl text-sm transition">
+                    Batal
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
 
 <?php require_once __DIR__ . '/../../includes/footer_admin.php'; ?>

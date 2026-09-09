@@ -18,68 +18,150 @@ if (!$transaksi || $transaksi['status'] !== 'keluar') {
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Struk Parkir - <?= htmlspecialchars($transaksi['plat_nomor']) ?></title>
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                fontFamily: {
+                    sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    mono: ['JetBrains Mono', 'monospace'],
+                },
+                colors: {
+                    brand: {
+                        50: '#FFF7EA',
+                        100: '#FEECC7',
+                        200: '#FDD68C',
+                        400: '#F8BA4E',
+                        500: '#F5A623',
+                        600: '#DB8E12',
+                        700: '#B0700D',
+                        800: '#7A4E09'
+                    }
+                }
+            }
+        }
+    }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* Saat di-print: sembunyikan tombol, hilangkan margin halaman, atur lebar seperti struk kasir */
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .receipt-font { font-family: 'JetBrains Mono', monospace; }
+
         @media print {
-            .no-print { display: none; }
-            body { background: white; }
-            .struk-box { box-shadow: none; border: none; width: 100%; }
+            .no-print { display: none !important; }
+            body { background: white !important; padding: 0 !important; }
+            .struk-box { 
+                box-shadow: none !important; 
+                border: none !important; 
+                width: 100% !important; 
+                max-width: 80mm !important;
+                margin: 0 !important;
+                padding: 10px !important;
+            }
             @page { margin: 0; size: 80mm auto; }
         }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex flex-col items-center py-8">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4 sm:p-8">
 
-    <div class="struk-box bg-white shadow-lg rounded-lg p-5 w-[320px] font-mono text-sm">
-
-        <div class="text-center mb-3">
-            <p class="font-bold text-base">APLIKASI PARKEER</p>
-            <p class="text-xs text-slate-500">Struk Bukti Pembayaran Parkir</p>
+    <!-- Struk Paper Card -->
+    <div class="struk-box bg-white text-slate-900 shadow-2xl shadow-brand-500/10 rounded-2xl p-6 w-[340px] receipt-font text-xs relative overflow-hidden border border-slate-200">
+        
+        <!-- Header Logo & Branding -->
+        <div class="text-center mb-4">
+            <p class="font-extrabold text-base tracking-widest text-slate-900">PARKEER SYSTEM</p>
+            <p class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Smart Gate &amp; Auto-Parking</p>
+            <p class="text-[9px] text-slate-400 mt-0.5">CV Creative Gama</p>
         </div>
 
-        <div class="border-t border-dashed border-slate-400 my-2"></div>
+        <!-- Simulated Barcode Header -->
+        <div class="flex items-center justify-center gap-1 my-3 opacity-80 h-7 bg-slate-900 rounded p-1">
+            <div class="h-full w-1 bg-white"></div>
+            <div class="h-full w-2 bg-white"></div>
+            <div class="h-full w-1 bg-white"></div>
+            <div class="h-full w-3 bg-white"></div>
+            <div class="h-full w-1 bg-white"></div>
+            <div class="h-full w-2 bg-white"></div>
+            <div class="h-full w-4 bg-white"></div>
+            <div class="h-full w-1 bg-white"></div>
+            <div class="h-full w-2 bg-white"></div>
+            <div class="h-full w-1 bg-white"></div>
+        </div>
 
-        <table class="w-full text-xs">
-            <tr><td class="py-0.5">No. Transaksi</td><td class="text-right">#<?= str_pad($transaksi['id_parkir'], 6, '0', STR_PAD_LEFT) ?></td></tr>
-            <tr><td class="py-0.5">Plat Nomor</td><td class="text-right font-bold"><?= htmlspecialchars($transaksi['plat_nomor']) ?></td></tr>
-            <tr><td class="py-0.5">Jenis</td><td class="text-right capitalize"><?= htmlspecialchars($transaksi['jenis_kendaraan']) ?></td></tr>
-            <tr><td class="py-0.5">Area</td><td class="text-right"><?= htmlspecialchars($transaksi['nama_area']) ?></td></tr>
-        </table>
+        <div class="border-t-2 border-dashed border-slate-300 my-3"></div>
 
-        <div class="border-t border-dashed border-slate-400 my-2"></div>
-
-        <table class="w-full text-xs">
-            <tr><td class="py-0.5">Masuk</td><td class="text-right"><?= date('d/m/Y H:i', strtotime($transaksi['waktu_masuk'])) ?></td></tr>
-            <tr><td class="py-0.5">Keluar</td><td class="text-right"><?= date('d/m/Y H:i', strtotime($transaksi['waktu_keluar'])) ?></td></tr>
-            <tr><td class="py-0.5">Durasi</td><td class="text-right"><?= $transaksi['durasi_jam'] ?> jam</td></tr>
-        </table>
-
-        <div class="border-t border-dashed border-slate-400 my-2"></div>
-
-        <table class="w-full text-sm">
+        <!-- Details Table -->
+        <table class="w-full text-xs space-y-1">
             <tr>
-                <td class="py-1 font-bold">TOTAL BAYAR</td>
-                <td class="text-right font-bold text-base">Rp <?= number_format($transaksi['biaya_total'], 0, ',', '.') ?></td>
+                <td class="py-1 text-slate-500">NO. TIKET</td>
+                <td class="text-right font-bold text-slate-900">#<?= str_pad($transaksi['id_parkir'], 6, '0', STR_PAD_LEFT) ?></td>
+            </tr>
+            <tr>
+                <td class="py-1 text-slate-500">PLAT NOMOR</td>
+                <td class="text-right font-extrabold text-sm text-slate-900 uppercase tracking-wider"><?= htmlspecialchars($transaksi['plat_nomor']) ?></td>
+            </tr>
+            <tr>
+                <td class="py-1 text-slate-500">JENIS KENDARAAN</td>
+                <td class="text-right font-semibold capitalize text-slate-800"><?= htmlspecialchars($transaksi['jenis_kendaraan']) ?></td>
+            </tr>
+            <tr>
+                <td class="py-1 text-slate-500">AREA LOKASI</td>
+                <td class="text-right font-semibold text-slate-800"><?= htmlspecialchars($transaksi['nama_area']) ?></td>
             </tr>
         </table>
 
-        <div class="border-t border-dashed border-slate-400 my-2"></div>
+        <div class="border-t border-dashed border-slate-300 my-3"></div>
 
-        <div class="text-center text-xs text-slate-500 mt-3">
-            <p>Petugas: <?= htmlspecialchars($transaksi['nama_petugas']) ?></p>
-            <p class="mt-2">Terima kasih telah parkir di sini</p>
-            <p>Simpan struk ini sebagai bukti</p>
+        <table class="w-full text-xs">
+            <tr>
+                <td class="py-1 text-slate-500">WAKTU MASUK</td>
+                <td class="text-right text-slate-800"><?= date('d/m/Y H:i', strtotime($transaksi['waktu_masuk'])) ?></td>
+            </tr>
+            <tr>
+                <td class="py-1 text-slate-500">WAKTU KELUAR</td>
+                <td class="text-right text-slate-800"><?= date('d/m/Y H:i', strtotime($transaksi['waktu_keluar'])) ?></td>
+            </tr>
+            <tr>
+                <td class="py-1 text-slate-500">TOTAL DURASI</td>
+                <td class="text-right font-bold text-slate-900"><?= $transaksi['durasi_jam'] ?> Jam</td>
+            </tr>
+        </table>
+
+        <div class="border-t-2 border-dashed border-slate-300 my-3"></div>
+
+        <!-- Total Payment -->
+        <div class="flex items-center justify-between py-1">
+            <span class="font-extrabold text-xs text-slate-900">TOTAL BAYAR</span>
+            <span class="text-base font-extrabold text-slate-900">Rp <?= number_format($transaksi['biaya_total'], 0, ',', '.') ?></span>
         </div>
+
+        <div class="border-t-2 border-dashed border-slate-300 my-3"></div>
+
+        <!-- Footer Info -->
+        <div class="text-center text-[10px] text-slate-500 space-y-1">
+            <p>Petugas: <span class="font-semibold text-slate-800"><?= htmlspecialchars($transaksi['nama_petugas']) ?></span></p>
+            <p class="pt-1 font-semibold text-slate-700">Terima kasih atas kunjungan Anda!</p>
+            <p>Simpan struk ini sebagai bukti pembayaran sah.</p>
+        </div>
+
     </div>
 
-    <div class="no-print flex gap-2 mt-6">
-        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm">
-            🖨️ Cetak Struk
+    <!-- Print Action Buttons (Hidden on Print) -->
+    <div class="no-print flex items-center gap-3 mt-6">
+        <button onclick="window.print()" class="bg-gradient-to-r from-brand-400 to-brand-500 hover:from-brand-300 hover:to-brand-400 text-slate-950 font-extrabold px-6 py-3.5 rounded-xl text-sm transition shadow-xl shadow-brand-500/30 flex items-center gap-2 border border-brand-400">
+            <i class="fa-solid fa-print text-base"></i>
+            <span>Cetak Struk Sekarang</span>
         </button>
-        <a href="/parkeer/petugas/transaksi/index.php" class="bg-slate-200 hover:bg-slate-300 px-5 py-2 rounded-lg text-sm">
-            Kembali
+        <a href="/parkeer/petugas/transaksi/index.php" class="bg-slate-900 hover:bg-slate-800 text-slate-200 font-bold px-5 py-3.5 rounded-xl text-sm border border-slate-700 transition flex items-center gap-2">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Kembali</span>
         </a>
     </div>
 

@@ -1,8 +1,9 @@
 <?php
 // includes/auth.php
 
-// Selalu mulai session di paling atas sebelum ada output apapun
+// Selalu mulai output buffering & session di paling atas sebelum ada output apapun
 if (session_status() === PHP_SESSION_NONE) {
+    ob_start();
     session_start();
 }
 
@@ -13,7 +14,7 @@ if (session_status() === PHP_SESSION_NONE) {
 function cekLogin(): void
 {
     if (!isset($_SESSION['id_user'])) {
-        header("Location: /aplikasi-parkeer/auth/login.php");
+        header("Location: /parkeer/auth/login.php");
         exit;
     }
 }
